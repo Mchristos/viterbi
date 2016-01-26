@@ -1,55 +1,62 @@
 import numpy as np
+from functions import *
 
-states = ['high', 'low']
-values= ['A','C', 'G','T']
-#State Transition Probabilities [[H->H,L->H], [H->L, L->L]]
-T = np.matrix([[0.5,0.4],[0.5,0.6]]) # T[i,j] means transfer TO i FROM j !!
+states = ['hot', 'cold', 'small', 'medium', 'large' ]
+values= ['yes','maybe','no']
+#State Transition Probabilities [[h->h,c->h,s->h,m->h,l->h], [],[],[],[]]
+T = np.matrix([[0.6,0.8,0.,0.,0.],[0.4,0.2,0.,0.,0.],[0.,0.,0.,0.,0.],[0.,0.,1.,0.2,0.2],[0.,0.,0.,0.8,0.8]]) # T[i,j] means transfer TO i FROM j !!
 # State -> Observation "emission" probabilities  [[H->A,L->A],[H->C,L->C],[etc..],[]]
-E = np.matrix([[0.2,0.3],[0.3,0.2],[0.3,0.2],[0.2,0.3]])
+E = np.matrix([[0.9,0.,0.3,0.4,0.8],[0.1,0.1,0.3,0.3,0.1],[0.,0.9,0.4,0.3,0.1]])
 # E[t,k] is the prob of emitting the t'th observation FROM the k'th state
-
+print("T = \n" + str(T))
+print("")
+print("E = \n" +str(E))
 #Data
-observations = ['G','G','C','A','C','T','G','A','A']
+observations = ['yes','no','no','maybe','yes', 'no' , 'maybe']
 #Convert data
 y = []
-for measure in observations:
-    if measure == 'A':
+for value in observations:
+    if value == 'yes':
         y.append(0)
-    elif measure == 'C':
+    elif value == 'maybe':
         y.append(1)
-    elif measure == 'G':
+    elif value == 'no':
         y.append(2)
-    elif measure == 'T':
-        y.append(3)
     else:
         break
-        print("invalid measurement array. please leave")
+        print("invalid measurement array. please leave!")
 
 # Uniform 'beleif' distribution
-p = [0.5,0.5]
+p = [0.2,0.2,0.2,0.2,0.2] #hot,cld,sml,med,lrg
 
 #Initialize beleif dist (given first obs) and 'update-memory' for backtrack
+# i.e. for t = 0
 V = [[]]
 B = [[]]
 for i in range(len(states)):
-    V[0].append(np.log(p[i]) + np.log(E[y[0],i]))
+    V[0].append(p[i]*E[y[0],i]) #prior x emission prob
     B[0].append(i)
-
+V[0] = normalize(V[0])
+print(V[0])
 #The real shit goes down
 for t in range(1,len(observations)): #for each observed state (time step)
-    measure = y[t]
+    value = y[t]
     V.append([])
     B.append([])
     for i in range(len(states)): #update each element in 'belief' distribution
         transfer = []
         for k in range(len(states)):
-            transfer.append( V[t-1][k] +np.log(E[measure,k]) + np.log(T[i,k]) )
+            transfer.append( V[t-1][k]*E[value,k]*T[i,k] )
         V[t].append(max(transfer))
         B[t].append(np.argmax(transfer))
-print(B)
-print(V)
+    V[t] = normalize(V[t])
+    print(V[t])
+    print("normalized sum: " + str(sum(V[t])) )
+    print(B[t])
+# print(B)
+# print(V)
 
 #Backtrack to get most probable path
-index = np.argmax(V[len(observations)])
-bestpath = [index]
+# index = np.argmax(V[len(observations)])
+# bestpath = [index]
 # for t in range()
