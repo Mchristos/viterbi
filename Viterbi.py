@@ -38,6 +38,7 @@ for i in range(len(states)):
     B[0].append(i)
 V[0] = normalize(V[0])
 print(V[0])
+print(B[0])
 #The real shit goes down
 for t in range(1,len(observations)): #for each observed state (time step)
     value = y[t]
@@ -51,12 +52,14 @@ for t in range(1,len(observations)): #for each observed state (time step)
         B[t].append(np.argmax(transfer))
     V[t] = normalize(V[t])
     print(V[t])
-    print("normalized sum: " + str(sum(V[t])) )
+    # print("normalized sum: " + str(sum(V[t])) )
     print(B[t])
 # print(B)
 # print(V)
 
 #Backtrack to get most probable path
-# index = np.argmax(V[len(observations)])
-# bestpath = [index]
-# for t in range()
+index = np.argmax(V[len(observations)-1])
+bestpath = [index] # len(observations)-1 'th element
+for t in range(len(observations)-2 , -1,-1):
+    bestpath = [B[t+1][bestpath[0]]] + bestpath
+print("best path is " + str(bestpath))
