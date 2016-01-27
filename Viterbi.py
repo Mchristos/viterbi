@@ -12,7 +12,9 @@ print("T = \n" + str(T))
 print("")
 print("E = \n" +str(E))
 #Data
-observations = ['yes','no','no','maybe','yes', 'no' , 'maybe']
+observations = ['no','no','no','no','no', 'no','no']
+
+
 #Convert data
 y = []
 for value in observations:
