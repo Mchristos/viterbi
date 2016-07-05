@@ -2,6 +2,15 @@ import numpy as np
 from functions import *
 
 def Viterbi(states, values, T, E, observations):
+	""" Uses the Viterbi algorithm to find the most likely sequence of states given a sequence of observations. 
+
+	states - list of possible states
+	values - list of possible "observable" values
+	T - "transition matrix", a square matrix whose (i,j) entry specifies the probability of transitioning from state j to state i
+	E - "emission matrix", a matrix whose (i,j) entry specifies the probability of state j "emitting" observable value i.
+	observations = sequence of actual observed values (taken from the finite set of possible values in the 'values' list).  
+	"""
+
     #Convert observations to numbers
     y = []
     for obs in observations:
